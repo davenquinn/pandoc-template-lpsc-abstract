@@ -1,0 +1,159 @@
+\documentclass[letterpaper,12pt]{article}
+
+\usepackage[paper=letterpaper, margin=1in, nohead, pdftex]{geometry}
+\usepackage{fontspec}
+\usepackage{textcomp}
+\usepackage[small,compact]{titlesec}
+\usepackage{graphicx}			% Nice graphics, optional
+\usepackage{siunitx}
+\usepackage[version=3]{mhchem}
+\usepackage{fancyhdr}
+\usepackage{wrapfig}
+\usepackage{ifthen}
+\usepackage{tabularx}
+\usepackage{float}
+\usepackage{paralist}
+\usepackage{longtable}
+\usepackage{multicol}
+\usepackage{setspace}
+\usepackage[font={footnotesize}]{caption}
+
+\newfontfamily\HNLight
+  [Ligatures=TeX,
+   Scale=0.9,
+   BoldFont={Helvetica Neue},
+   UprightFont={Helvetica Neue Light},
+   ItalicFont={Helvetica Neue Light Italic}
+  ]{Helvetica Neue Light}
+
+\newfontfamily\HN
+  [Ligatures=TeX,
+   Scale=0.9,
+   BoldFont={Helvetica Neue Medium},
+   UprightFont={Helvetica Neue},
+   ItalicFont={Helvetica Neue Italic}
+  ]{Helvetica Neue}
+
+\newfontfamily\Gotham
+  [Ligatures=TeX,
+   Scale=0.9,
+   BoldFont={Gotham Bold},
+   UprightFont={Gotham Book},
+   ItalicFont={Gotham Light Italic}
+  ]{Gotham Book}
+
+\newfontfamily\GothamLight
+  [Ligatures=TeX,
+   Scale=0.9,
+   BoldFont={Gotham Book},
+   UprightFont={Gotham Light},
+   ItalicFont={Gotham Light Italic}
+  ]{Gotham Light}
+
+\newenvironment{Figure}
+  {\par\medskip\noindent\minipage{\linewidth}}
+  {\endminipage\par\medskip}
+
+\defaultfontfeatures{Ligatures=TeX}
+\setmainfont{Times New Roman}
+
+$if(natbib)$
+\usepackage[super,comma,sort&compress]{natbib}
+$endif$
+$if(biblatex)$
+% use with biber backend
+\usepackage[
+  backend=biber,
+  autocite=inline,
+  url=false,
+  isbn=false,
+  doi=false,
+  style=numeric,
+  mincitenames=1,
+  maxcitenames=2,
+  uniquelist=false,
+  firstinits=true
+  ]{biblatex}
+\renewbibmacro{in:}{}
+\renewcommand*{\newunitpunct}{\addcomma\space}
+\setlength\bibitemsep{0pt}
+\AtEveryBibitem{%
+  \clearfield{day}%
+  \clearfield{month}%
+  \clearfield{endday}%
+  \clearfield{endmonth}%
+  \clearfield{pages}%
+  \clearfield{title}%
+}
+\renewcommand{\bibfont}{\footnotesize}
+\defbibenvironment{bibliography}
+  {}%  {\noindent}
+  {\unspace}
+  {\printtext[labelnumberwidth]{%
+    \printfield{prefixnumber}%
+    \printfield{labelnumber}}
+    \addspace}
+\renewbibmacro*{finentry}{\finentry\addspace}
+$for(bibliography)$
+\addbibresource{$bibliography$}
+$endfor$
+$endif$
+
+%\renewcommand{\bibfont}{\small}	% Change the font size of the bibliography
+%\renewcommand{\bibsection}{\subsubsection*{\refname}}
+\newcommand{\tild}{\texttildelow}
+\newcommand{\figp}[1]{[Figure \ref{fig:#1}]}
+\newcommand{\figt}[1]{Figure \ref{fig:#1}}
+\newcommand{\tabref}[1]{[Table \ref{tab:#1}]}
+\newcommand{\appref}[1]{[see Appendix \ref{app:#1}]}
+\newcommand{\km}[1]{\SI{#1}{\kilo\meter}}
+
+\setcounter{secnumdepth}{-1}
+% suck up extra white space
+
+\titlespacing{\part}{0pt}{*0}{2ex}
+\titlespacing{\section}{0pt}{2pt}{1ex}
+\titlespacing{\subsection}{0pt}{1pt}{1ex}
+\titlespacing{\subsubsection}{0pt}{*0}{1ex}
+
+% \titleformat{<command>}[<shape>]{<format>}{<label>}{<sep>}{<before-code>}[<after-code>]
+
+\titleformat{\section}[runin]{\small\bfseries}{\thesection}{6pt}{}[:]
+\titleformat{\subsection}[runin]{\small\itshape}{\thesubsection}{3pt}{}[:]
+
+% suck up extra white space
+\setlength{\parskip}{0pt}
+\setlength{\parsep}{0pt}
+\setlength{\headsep}{-5pt}
+\setlength{\topskip}{0pt}
+\setlength{\topmargin}{0pt}
+\setlength{\topsep}{0pt}
+\setlength{\partopsep}{0pt}
+\setlength\bibitemsep{0pt}
+
+%\titleformat{\section}{\bfseries}{\thesection}{0pt}{}
+%\titleformat{\subsection}[runin]{\small\bfseries}{\thesubsection}{0pt}{}
+%\titleformat{\subsubsection}[runin]{\small\bfseries}{\thesubsubsection}{0pt}{}
+
+\begin{document}
+
+\noindent{\small\textbf{\uppercase{$title$}}}~~~\textmd{\small{$author$}}~~~\footnotesize{$affiliation$}
+\vspace{-14pt}
+\begin{multicols}{2}
+\small
+$body$
+\footnotesize
+
+$if(natbib)$
+$if(bibliography)$
+$if(biblio-title)$\renewcommand\bibname{$biblio-title$}$endif$
+\bibliography{$for(bibliography)$$bibliography$$sep$,$endfor$}
+$endif$
+$endif$
+$if(biblatex)$
+\printbibliography$if(biblio-title)$[title=$biblio-title$]$endif$
+$endif$
+\end{multicols}
+
+\end{document}
+

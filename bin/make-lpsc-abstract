@@ -1,0 +1,54 @@
+#!/usr/bin/env zsh
+# USAGE: make-abstract <directory>
+# <directory> should contain a file called `main.md`
+# A file or symlink called `references.bib` should be available,
+#   or the environment variable `BIBTEX_LIBRARY` should be defined
+
+f="$(readlink -f "$0")"
+dir="${f:h:h}"
+
+function run-latex {
+  xelatex -interaction=nonstopmode -output-directory $BUILD $1
+}
+
+T="$dir/lpsc-abstract.tex"
+BUILD="$1/build"
+OUTPUT="$1/output"
+texfile="$BUILD/main.tex"
+auxfile="${texfile:r}.aux"
+bibfile="$1/references.bib"
+
+mkdir -p $BUILD
+
+name='abstract'
+if [ -n "$2" ]; then
+  name=$2
+fi
+
+echo "Building from $1"
+
+# Create latex
+cat "$1/main.md" \
+| sed -e 's/`fig:\([a-z-]\+\)`/\\ref{fig:\1}/g' \
+| figures inline \
+  --collect-dir "$1/Figures" \
+  --template-dir "$dir/templates" \
+  "$1/includes.yaml" \
+| pandoc -t latex --biblatex --template=$T -V bibliography:$bibfile \
+| sed -e 's/\\textbackslash{}/\\/g' -e 's/\\\([{}]\)/\1/g' \
+> $texfile
+
+if [[ ! -f $auxfile ]]; then
+  run-latex $texfile
+fi
+
+bib-filter --clean --biblatex --aux "$auxfile" "$BIBTEX_LIBRARY" "$bibfile"
+
+biber ${auxfile:r}
+run-latex $texfile
+
+mkdir -p $OUTPUT
+mv "$BUILD/main.pdf" "$OUTPUT/${name}.pdf"
+
+# Make docx file
+pandoc -t docx -o "$OUTPUT/${name}-text.docx" "$1/main.md"
